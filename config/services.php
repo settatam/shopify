@@ -89,4 +89,11 @@ return [
         'sandbox' => env('QUICKBOOKS_SANDBOX', true),
     ],
 
+    'xero' => [
+        'client_id' => env('XERO_CLIENT_ID'),
+        'client_secret' => env('XERO_CLIENT_SECRET'),
+        'redirect_uri' => env('XERO_REDIRECT_URI'),
+        'scopes' => env('XERO_SCOPES', 'accounting.transactions accounting.contacts accounting.settings.read offline_access'),
+    ],
+
 ];

@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\AIMappingController;
 use App\Http\Controllers\Walmart\AuthController as WalmartAuthController;
 use App\Http\Controllers\Etsy\AuthController as EtsyAuthController;
 use App\Http\Controllers\QuickBooks\AuthController as QuickBooksAuthController;
+use App\Http\Controllers\Xero\AuthController as XeroAuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -97,6 +98,15 @@ Route::prefix('quickbooks')->group(function() {
     Route::post('/channels/{channel}/disconnect', [QuickBooksAuthController::class, 'disconnect'])->middleware('auth:sanctum');
     Route::post('/channels/{channel}/test', [QuickBooksAuthController::class, 'test'])->middleware('auth:sanctum');
     Route::get('/channels/{channel}/accounts', [QuickBooksAuthController::class, 'getAccounts'])->middleware('auth:sanctum');
+});
+
+// Xero integration
+Route::prefix('xero')->group(function() {
+    Route::get('/authorize', [XeroAuthController::class, 'authorize'])->middleware('auth:sanctum');
+    Route::get('/callback', [XeroAuthController::class, 'callback']);
+    Route::post('/channels/{channel}/disconnect', [XeroAuthController::class, 'disconnect'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/test', [XeroAuthController::class, 'test'])->middleware('auth:sanctum');
+    Route::get('/channels/{channel}/accounts', [XeroAuthController::class, 'getAccounts'])->middleware('auth:sanctum');
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){
