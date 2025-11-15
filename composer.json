@@ -15,6 +15,8 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "laravel/ui": "^4.6",
+        "mailchimp/marketing": "^3.0",
+        "sendgrid/sendgrid": "^8.1",
         "tightenco/ziggy": "^2.0",
         "twilio/sdk": "^8.8"
     },

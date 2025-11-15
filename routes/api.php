@@ -490,4 +490,41 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('/team/invitations/{token}/accept', [TeamController::class, 'acceptInvitation'])->name('team.invitation.accept');
     Route::post('/team/invitations/{token}/accept-existing', [TeamController::class, 'acceptInvitationExisting'])->middleware('auth:sanctum')->name('team.invitation.accept-existing');
 
+    // SendGrid Email Integration
+    Route::prefix('sendgrid')->group(function() {
+        Route::get('/configuration', [App\Http\Controllers\Api\SendGridController::class, 'getConfiguration']);
+        Route::post('/configure', [App\Http\Controllers\Api\SendGridController::class, 'configure']);
+        Route::post('/test', [App\Http\Controllers\Api\SendGridController::class, 'testConfiguration']);
+        Route::post('/send-test-email', [App\Http\Controllers\Api\SendGridController::class, 'sendTestEmail']);
+        Route::put('/settings', [App\Http\Controllers\Api\SendGridController::class, 'updateSettings']);
+        Route::get('/statistics', [App\Http\Controllers\Api\SendGridController::class, 'getStatistics']);
+        Route::delete('/disconnect', [App\Http\Controllers\Api\SendGridController::class, 'disconnect']);
+    });
+
+    // Mailchimp Email Marketing Integration
+    Route::prefix('mailchimp')->group(function() {
+        // Configuration
+        Route::get('/configuration', [App\Http\Controllers\Api\MailchimpController::class, 'getConfiguration']);
+        Route::post('/configure', [App\Http\Controllers\Api\MailchimpController::class, 'configure']);
+        Route::delete('/disconnect', [App\Http\Controllers\Api\MailchimpController::class, 'disconnect']);
+
+        // Audiences (Lists)
+        Route::get('/audiences', [App\Http\Controllers\Api\MailchimpController::class, 'getAudiences']);
+        Route::get('/audiences/count', [App\Http\Controllers\Api\MailchimpController::class, 'getSubscriberCount']);
+
+        // Subscribers
+        Route::get('/subscribers', [App\Http\Controllers\Api\MailchimpController::class, 'getSubscribers']);
+        Route::post('/subscribers', [App\Http\Controllers\Api\MailchimpController::class, 'addSubscriber']);
+        Route::post('/subscribers/unsubscribe', [App\Http\Controllers\Api\MailchimpController::class, 'unsubscribe']);
+        Route::post('/subscribers/sync', [App\Http\Controllers\Api\MailchimpController::class, 'syncSubscribers']);
+
+        // Campaigns
+        Route::get('/campaigns', [App\Http\Controllers\Api\MailchimpController::class, 'getCampaigns']);
+        Route::post('/campaigns', [App\Http\Controllers\Api\MailchimpController::class, 'createCampaign']);
+        Route::get('/campaigns/{campaign}', [App\Http\Controllers\Api\MailchimpController::class, 'getCampaign']);
+        Route::post('/campaigns/{campaign}/send', [App\Http\Controllers\Api\MailchimpController::class, 'sendCampaign']);
+        Route::post('/campaigns/{campaign}/schedule', [App\Http\Controllers\Api\MailchimpController::class, 'scheduleCampaign']);
+        Route::get('/campaigns/{campaign}/statistics', [App\Http\Controllers\Api\MailchimpController::class, 'getCampaignStatistics']);
+    });
+
 });
