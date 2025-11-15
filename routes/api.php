@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\AIOptimizationController;
 use App\Http\Controllers\Api\SmartPublishController;
 use App\Http\Controllers\Api\AutoRelistController;
 use App\Http\Controllers\Api\ReturnController;
+use App\Http\Controllers\Api\NotificationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -427,5 +428,39 @@ Route::middleware(['auth:sanctum'])->group(function(){
         // Statistics
         Route::get('/statistics', [ReturnController::class, 'getStatistics']);
     });
+
+    // Notifications Module
+    Route::prefix('notifications')->group(function() {
+        // Templates
+        Route::get('/templates', [NotificationController::class, 'getTemplates']);
+        Route::post('/templates', [NotificationController::class, 'createTemplate']);
+        Route::get('/templates/{template}', [NotificationController::class, 'getTemplate']);
+        Route::put('/templates/{template}', [NotificationController::class, 'updateTemplate']);
+        Route::delete('/templates/{template}', [NotificationController::class, 'deleteTemplate']);
+        Route::post('/templates/{template}/test', [NotificationController::class, 'testTemplate']);
+
+        // Preferences
+        Route::get('/preferences', [NotificationController::class, 'getPreferences']);
+        Route::put('/preferences', [NotificationController::class, 'updatePreferences']);
+
+        // Logs
+        Route::get('/logs', [NotificationController::class, 'getLogs']);
+        Route::get('/logs/{log}', [NotificationController::class, 'getLog']);
+        Route::post('/logs/{log}/retry', [NotificationController::class, 'retryLog']);
+        Route::post('/logs/retry-all', [NotificationController::class, 'retryAllFailed']);
+
+        // Statistics
+        Route::get('/statistics', [NotificationController::class, 'getStatistics']);
+
+        // Events
+        Route::get('/events', [NotificationController::class, 'getEvents']);
+
+        // Webhooks
+        Route::post('/webhook', [NotificationController::class, 'handleWebhook']);
+    });
+
+    // Notification tracking (no auth required)
+    Route::get('/notifications/track/open/{id}', [NotificationController::class, 'trackOpen'])->name('notifications.track.open');
+    Route::get('/notifications/track/click/{id}', [NotificationController::class, 'trackClick'])->name('notifications.track.click');
 
 });
