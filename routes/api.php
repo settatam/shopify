@@ -30,6 +30,7 @@ use App\Http\Controllers\Dejavoo\PaymentController as DejavooPaymentController;
 use App\Http\Controllers\Dashboard\SalesDashboardController;
 use App\Http\Controllers\ZohoInventory\AuthController as ZohoInventoryAuthController;
 use App\Http\Controllers\Api\AICategoryMappingController;
+use App\Http\Controllers\Api\AIOptimizationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -303,6 +304,23 @@ Route::middleware(['auth:sanctum'])->group(function(){
         Route::post('/batch-generate', [AICategoryMappingController::class, 'batchGenerate']);
         Route::get('/statistics', [AICategoryMappingController::class, 'getStatistics']);
         Route::delete('/{mapping}', [AICategoryMappingController::class, 'deleteMapping']);
+    });
+
+    // AI Content Optimization (Title & Description)
+    Route::prefix('ai-optimization')->group(function() {
+        Route::post('/products/{product}/generate', [AIOptimizationController::class, 'generateForProduct']);
+        Route::get('/products/{product}/optimizations', [AIOptimizationController::class, 'getOptimizations']);
+        Route::get('/pending', [AIOptimizationController::class, 'getPendingOptimizations']);
+        Route::post('/{optimization}/approve', [AIOptimizationController::class, 'approveOptimization']);
+        Route::post('/{optimization}/reject', [AIOptimizationController::class, 'rejectOptimization']);
+        Route::post('/{optimization}/modify', [AIOptimizationController::class, 'modifyOptimization']);
+        Route::post('/{optimization}/apply', [AIOptimizationController::class, 'applyToProduct']);
+        Route::post('/batch-approve', [AIOptimizationController::class, 'batchApprove']);
+        Route::post('/batch-reject', [AIOptimizationController::class, 'batchReject']);
+        Route::post('/batch-generate', [AIOptimizationController::class, 'batchGenerate']);
+        Route::get('/statistics', [AIOptimizationController::class, 'getStatistics']);
+        Route::delete('/{optimization}', [AIOptimizationController::class, 'deleteOptimization']);
+        Route::post('/products/{product}/preview', [AIOptimizationController::class, 'previewOptimization']);
     });
 
 });
