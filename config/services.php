@@ -81,4 +81,12 @@ return [
         'scopes' => env('ETSY_SCOPES', 'listings_r listings_w transactions_r shops_r'),
     ],
 
+    'quickbooks' => [
+        'client_id' => env('QUICKBOOKS_CLIENT_ID'),
+        'client_secret' => env('QUICKBOOKS_CLIENT_SECRET'),
+        'redirect_uri' => env('QUICKBOOKS_REDIRECT_URI'),
+        'scopes' => env('QUICKBOOKS_SCOPES', 'com.intuit.quickbooks.accounting'),
+        'sandbox' => env('QUICKBOOKS_SANDBOX', true),
+    ],
+
 ];

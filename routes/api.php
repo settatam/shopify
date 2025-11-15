@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\{ChannelAuthController, MappingsController, Publish
 use App\Http\Controllers\Api\AIMappingController;
 use App\Http\Controllers\Walmart\AuthController as WalmartAuthController;
 use App\Http\Controllers\Etsy\AuthController as EtsyAuthController;
+use App\Http\Controllers\QuickBooks\AuthController as QuickBooksAuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -87,6 +88,15 @@ Route::prefix('etsy')->group(function() {
     Route::get('/callback', [EtsyAuthController::class, 'callback']);
     Route::post('/channels/{channel}/disconnect', [EtsyAuthController::class, 'disconnect'])->middleware('auth:sanctum');
     Route::post('/channels/{channel}/test', [EtsyAuthController::class, 'test'])->middleware('auth:sanctum');
+});
+
+// QuickBooks integration
+Route::prefix('quickbooks')->group(function() {
+    Route::get('/authorize', [QuickBooksAuthController::class, 'authorize'])->middleware('auth:sanctum');
+    Route::get('/callback', [QuickBooksAuthController::class, 'callback']);
+    Route::post('/channels/{channel}/disconnect', [QuickBooksAuthController::class, 'disconnect'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/test', [QuickBooksAuthController::class, 'test'])->middleware('auth:sanctum');
+    Route::get('/channels/{channel}/accounts', [QuickBooksAuthController::class, 'getAccounts'])->middleware('auth:sanctum');
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){
