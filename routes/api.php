@@ -21,6 +21,7 @@ use App\Http\Controllers\Xero\AuthController as XeroAuthController;
 use App\Http\Controllers\Twilio\SettingsController as TwilioSettingsController;
 use App\Http\Controllers\Square\AuthController as SquareAuthController;
 use App\Http\Controllers\Square\WebhookController as SquareWebhookController;
+use App\Http\Controllers\Square\SquareAppController;
 use App\Http\Controllers\ShipStation\SettingsController as ShipStationSettingsController;
 use App\Http\Controllers\ShipStation\WebhookController as ShipStationWebhookController;
 use App\Http\Controllers\POS\POSController;
@@ -147,6 +148,23 @@ Route::prefix('square')->group(function() {
     Route::post('/channels/{channel}/fetch-orders', [SquareAuthController::class, 'fetchOrders'])->middleware('auth:sanctum');
     Route::get('/channels/{channel}/locations', [SquareAuthController::class, 'getLocations'])->middleware('auth:sanctum');
     Route::post('/webhook', [SquareWebhookController::class, 'handle'])->withoutMiddleware(['auth:sanctum']);
+});
+
+// Square App Marketplace Installation (public endpoints)
+Route::prefix('square-app')->group(function() {
+    // Installation flow (no auth required)
+    Route::get('/install', [SquareAppController::class, 'install']);
+    Route::get('/callback', [SquareAppController::class, 'callback']);
+
+    // Onboarding (token-based auth)
+    Route::get('/onboarding/status', [SquareAppController::class, 'getOnboardingStatus']);
+    Route::post('/onboarding/complete', [SquareAppController::class, 'completeOnboarding']);
+
+    // Status check
+    Route::get('/status', [SquareAppController::class, 'checkStatus']);
+
+    // Uninstall webhook (Square calls this)
+    Route::post('/uninstall', [SquareAppController::class, 'uninstall']);
 });
 
 // ShipStation shipping integration
