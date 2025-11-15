@@ -15,6 +15,7 @@ use App\Http\Controllers\PricingController;
 use App\Http\Controllers\Api\{ChannelAuthController, MappingsController, PublishController, ShopifyWebhooksController};
 use App\Http\Controllers\Api\AIMappingController;
 use App\Http\Controllers\Walmart\AuthController as WalmartAuthController;
+use App\Http\Controllers\Etsy\AuthController as EtsyAuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -78,6 +79,14 @@ Route::prefix('walmart')->group(function() {
     Route::post('/connect', [WalmartAuthController::class, 'store'])->middleware('auth:sanctum');
     Route::post('/channels/{channel}/disconnect', [WalmartAuthController::class, 'disconnect'])->middleware('auth:sanctum');
     Route::post('/channels/{channel}/test', [WalmartAuthController::class, 'test'])->middleware('auth:sanctum');
+});
+
+// Etsy integration
+Route::prefix('etsy')->group(function() {
+    Route::get('/authorize', [EtsyAuthController::class, 'authorize'])->middleware('auth:sanctum');
+    Route::get('/callback', [EtsyAuthController::class, 'callback']);
+    Route::post('/channels/{channel}/disconnect', [EtsyAuthController::class, 'disconnect'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/test', [EtsyAuthController::class, 'test'])->middleware('auth:sanctum');
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){

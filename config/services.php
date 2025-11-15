@@ -74,4 +74,11 @@ return [
         'sandbox' => env('WALMART_SANDBOX', true),
     ],
 
+    'etsy' => [
+        'client_id' => env('ETSY_CLIENT_ID'),
+        'client_secret' => env('ETSY_CLIENT_SECRET'),
+        'redirect_uri' => env('ETSY_REDIRECT_URI'),
+        'scopes' => env('ETSY_SCOPES', 'listings_r listings_w transactions_r shops_r'),
+    ],
+
 ];
