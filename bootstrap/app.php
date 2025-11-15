@@ -21,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(
             [
                 'shopify.auth' => \App\Http\Middleware\ShopifyAuth::class,
+                'permission' => \App\Http\Middleware\CheckPermission::class,
+                'role' => \App\Http\Middleware\CheckRole::class,
             ]
         );
 

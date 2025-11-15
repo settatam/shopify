@@ -23,6 +23,8 @@ class NotificationController extends Controller
      */
     public function getTemplates(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', NotificationTemplate::class);
+
         $shop = $request->user()->shop;
 
         $templates = NotificationTemplate::where('shop_id', $shop->id)
@@ -51,6 +53,8 @@ class NotificationController extends Controller
      */
     public function createTemplate(Request $request): JsonResponse
     {
+        $this->authorize('create', NotificationTemplate::class);
+
         $request->validate([
             'event_type' => 'required|string',
             'name' => 'required|string|max:255',
@@ -211,6 +215,8 @@ class NotificationController extends Controller
      */
     public function getLogs(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', NotificationLog::class);
+
         $shop = $request->user()->shop;
 
         $query = NotificationLog::where('shop_id', $shop->id);
@@ -289,6 +295,8 @@ class NotificationController extends Controller
      */
     public function retryAllFailed(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', NotificationLog::class);
+
         $shop = $request->user()->shop;
 
         $retried = $this->notificationService->retryFailed($shop);
@@ -304,6 +312,8 @@ class NotificationController extends Controller
      */
     public function getStatistics(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', NotificationLog::class);
+
         $shop = $request->user()->shop;
 
         $eventType = $request->input('event_type');

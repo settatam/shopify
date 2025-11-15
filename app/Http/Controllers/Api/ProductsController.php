@@ -11,6 +11,8 @@ class ProductsController extends Controller
     //
     public function show(Product $product)
     {
+        $this->authorize('view', $product);
+
         $product->load(['variants' => function($q){ $q->orderBy('id'); }]);
         return response()->json([
             'id' => $product->id,

@@ -22,6 +22,8 @@ class TeamController extends Controller
      */
     public function getMembers(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', User::class);
+
         $shop = $request->user()->shop;
 
         $members = $this->invitationService->getTeamMembers($shop, includeOwner: true);
@@ -36,6 +38,8 @@ class TeamController extends Controller
      */
     public function invite(Request $request): JsonResponse
     {
+        $this->authorize('create', TeamInvitation::class);
+
         $request->validate([
             'email' => 'required|email',
             'role' => 'required|in:owner,admin,manager,staff,readonly',
@@ -70,6 +74,8 @@ class TeamController extends Controller
      */
     public function bulkInvite(Request $request): JsonResponse
     {
+        $this->authorize('create', TeamInvitation::class);
+
         $request->validate([
             'invitations' => 'required|array|min:1',
             'invitations.*.email' => 'required|email',
@@ -97,6 +103,8 @@ class TeamController extends Controller
      */
     public function getPendingInvitations(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', TeamInvitation::class);
+
         $shop = $request->user()->shop;
 
         $invitations = $this->invitationService->getPendingInvitations($shop);
@@ -118,6 +126,8 @@ class TeamController extends Controller
                 'error' => 'Invitation not found',
             ], 404);
         }
+
+        // Public endpoint - no authorization needed for viewing invitation details by token
 
         if (!$invitation->canBeAccepted()) {
             return response()->json([
