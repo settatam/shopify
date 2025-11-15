@@ -21,6 +21,8 @@ use App\Http\Controllers\Xero\AuthController as XeroAuthController;
 use App\Http\Controllers\Twilio\SettingsController as TwilioSettingsController;
 use App\Http\Controllers\Square\AuthController as SquareAuthController;
 use App\Http\Controllers\Square\WebhookController as SquareWebhookController;
+use App\Http\Controllers\ShipStation\SettingsController as ShipStationSettingsController;
+use App\Http\Controllers\ShipStation\WebhookController as ShipStationWebhookController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -135,6 +137,24 @@ Route::prefix('square')->group(function() {
     Route::get('/channels/{channel}/locations', [SquareAuthController::class, 'getLocations'])->middleware('auth:sanctum');
     Route::post('/webhook', [SquareWebhookController::class, 'handle'])->withoutMiddleware(['auth:sanctum']);
 });
+
+// ShipStation shipping integration
+Route::prefix('shipstation')->middleware('auth:sanctum')->group(function() {
+    Route::get('/settings', [ShipStationSettingsController::class, 'index']);
+    Route::post('/credentials', [ShipStationSettingsController::class, 'updateCredentials']);
+    Route::post('/settings', [ShipStationSettingsController::class, 'updateSettings']);
+    Route::post('/test-connection', [ShipStationSettingsController::class, 'testConnection']);
+    Route::get('/carriers', [ShipStationSettingsController::class, 'getCarriers']);
+    Route::get('/services', [ShipStationSettingsController::class, 'getServices']);
+    Route::get('/warehouses', [ShipStationSettingsController::class, 'getWarehouses']);
+    Route::get('/stores', [ShipStationSettingsController::class, 'getStores']);
+    Route::post('/disconnect', [ShipStationSettingsController::class, 'disconnect']);
+    Route::post('/rates', [ShipStationSettingsController::class, 'getRates']);
+    Route::post('/create-label', [ShipStationSettingsController::class, 'createLabel']);
+});
+
+// ShipStation webhooks (unauthenticated)
+Route::post('/shipstation/webhook', [ShipStationWebhookController::class, 'handle']);
 
 Route::middleware(['auth:sanctum'])->group(function(){
 // Locations
