@@ -19,6 +19,8 @@ use App\Http\Controllers\Etsy\AuthController as EtsyAuthController;
 use App\Http\Controllers\QuickBooks\AuthController as QuickBooksAuthController;
 use App\Http\Controllers\Xero\AuthController as XeroAuthController;
 use App\Http\Controllers\Twilio\SettingsController as TwilioSettingsController;
+use App\Http\Controllers\Square\AuthController as SquareAuthController;
+use App\Http\Controllers\Square\WebhookController as SquareWebhookController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -119,6 +121,19 @@ Route::prefix('twilio')->middleware('auth:sanctum')->group(function() {
     Route::post('/templates', [TwilioSettingsController::class, 'updateTemplates']);
     Route::get('/history', [TwilioSettingsController::class, 'getHistory']);
     Route::post('/disconnect', [TwilioSettingsController::class, 'disconnect']);
+});
+
+// Square POS integration
+Route::prefix('square')->group(function() {
+    Route::get('/authorize', [SquareAuthController::class, 'authorize'])->middleware('auth:sanctum');
+    Route::get('/callback', [SquareAuthController::class, 'callback']);
+    Route::post('/channels/{channel}/disconnect', [SquareAuthController::class, 'disconnect'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/test', [SquareAuthController::class, 'test'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/sync-catalog', [SquareAuthController::class, 'syncCatalog'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/sync-inventory', [SquareAuthController::class, 'syncInventory'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/fetch-orders', [SquareAuthController::class, 'fetchOrders'])->middleware('auth:sanctum');
+    Route::get('/channels/{channel}/locations', [SquareAuthController::class, 'getLocations'])->middleware('auth:sanctum');
+    Route::post('/webhook', [SquareWebhookController::class, 'handle'])->withoutMiddleware(['auth:sanctum']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){

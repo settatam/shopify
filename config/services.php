@@ -96,4 +96,13 @@ return [
         'scopes' => env('XERO_SCOPES', 'accounting.transactions accounting.contacts accounting.settings.read offline_access'),
     ],
 
+    'square' => [
+        'application_id' => env('SQUARE_APPLICATION_ID'),
+        'application_secret' => env('SQUARE_APPLICATION_SECRET'),
+        'access_token' => env('SQUARE_ACCESS_TOKEN'),
+        'redirect_uri' => env('SQUARE_REDIRECT_URI'),
+        'sandbox' => env('SQUARE_SANDBOX', true),
+        'webhook_signature_key' => env('SQUARE_WEBHOOK_SIGNATURE_KEY'),
+    ],
+
 ];
