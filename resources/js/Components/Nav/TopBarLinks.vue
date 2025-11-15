@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePage, Link } from '@inertiajs/vue3'
-import buildNavLinks, { type NavContext, type NavItem } from '@/utils/buildNavLinks'
+import buildNavLinks, { type NavContext, type NavItem } from '@/lib/buildNavLinks'
 
 
 const props = defineProps<{

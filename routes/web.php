@@ -22,19 +22,18 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Shopify OAuth routes (no auth required)
+Route::get('/shopify/install', [\App\Http\Controllers\Shopify\AuthController::class, 'install'])->name('shopify.install');
+Route::get('/shopify/auth/callback', [\App\Http\Controllers\Shopify\AuthController::class, 'callback'])->name('shopify.callback');
+
+// Shopify webhooks (verified via middleware)
+Route::post('/shopify/webhooks', [\App\Http\Controllers\Shopify\WebhooksController::class, 'handle'])->name('shopify.webhooks');
+
+// Shopify embedded app pages (requires authentication)
 Route::middleware('shopify.auth')->group(function () {
     Route::get('/app', [\App\Http\Controllers\Shopify\AuthController::class, 'appHome'])->name('app.home');
-    // …any other embedded pages…
+    // Add any other embedded pages here
 });
-
-Route::middleware([VerifyShopifyFrame::class])->group(function(){
-Route::get('/app', [ShopifyAuth::class, 'appHome'])->name('app.home');
-});
-
-Route::get('/shopify/install', [ShopifyAuth::class, 'install'])->name('shopify.install');
-Route::get('/shopify/auth/callback', [ShopifyAuth::class, 'callback'])->name('shopify.callback');
-
-Route::post('/shopify/webhooks', [ShopifyHooks::class, 'handle'])->name('shopify.webhooks');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

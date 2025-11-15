@@ -78,10 +78,10 @@ class AuthController extends Controller
         if (config('services.shopify.billing_enabled')) {
             $url = $this->ensureSubscription($shop, $token);
             if ($url) return redirect()->away($url);
-
-            return redirect()->route('app.home', ['shop' => $shop]);
         }
 
+        // Redirect to app home after successful installation
+        return redirect()->route('app.home', ['shop' => $shop]);
     }
 
     protected function registerWebhooks(string $shop, string $token): void

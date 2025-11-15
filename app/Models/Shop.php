@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Shop extends Model
 {
@@ -12,7 +13,7 @@ class Shop extends Model
 
     public function channels(): HasMany { return $this->hasMany(Channel::class); }
     public function products(): HasMany { return $this->hasMany(Product::class); }
-    public function locations(): \Illuminate\Database\Eloquent\Relations\HasMany {
-        return $this->hasMany(\App\Models\Location::class);
+    public function locations(): HasMany {
+        return $this->hasMany(Location::class);
     }
 }

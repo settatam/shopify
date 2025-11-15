@@ -65,8 +65,8 @@
 <script setup>
 
 import { ref, reactive, computed, onMounted } from 'vue'
-import VariationMatrix from '@/components/VariationMatrix.vue'
-import ChecklistItem from '@/components/ChecklistItem.vue'
+import VariationMatrix from '@/Components/VariationMatrix.vue'
+import ChecklistItem from '@/Components/ChecklistItem.vue'
 
 const props = defineProps({ productId: [String, Number], channelId: [String, Number] })
 

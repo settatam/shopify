@@ -1,40 +1,40 @@
 <template>
-    <div>
-        <h3 class="font-semibold mb-2">Required Attributes</h3>
-        <AttributeMapRow v-for="a in requiredAttrs" :key="a" :attr="a" v-model="mapping.attributes[a]"/>
-    </div>
-    <div>
-        <h3 class="font-semibold mb-2">Optional Attributes</h3>
-        <AttributeMapRow v-for="a in optionalAttrs" :key="a" :attr="a" v-model="mapping.attributes[a]"/>
-    </div>
-    </div>
+    <div class="space-y-4">
+        <div class="border rounded p-4">
+            <h3 class="font-semibold mb-2">Core Mapping</h3>
+            <div class="grid gap-3">
+                <AttributeMapRow attr="title" v-model="mapping.title"/>
+                <AttributeMapRow attr="description" v-model="mapping.description"/>
+                <AttributeMapRow attr="brand" v-model="mapping.brand"/>
+                <AttributeMapRow attr="images" v-model="mapping.images"/>
+                <AttributeMapRow attr="variation_theme" v-model="mapping.variation_theme"/>
+            </div>
+        </div>
 
+        <div v-if="requiredAttrs.length" class="border rounded p-4">
+            <h3 class="font-semibold mb-2">Required Attributes</h3>
+            <AttributeMapRow v-for="a in requiredAttrs" :key="a" :attr="a" v-model="mapping.attributes[a]"/>
+        </div>
 
-    <div class="border rounded p-4">
-        <h3 class="font-semibold mb-2">Core Mapping</h3>
-        <div class="grid gap-3">
-            <AttributeMapRow attr="title" v-model="mapping.title"/>
-            <AttributeMapRow attr="description" v-model="mapping.description"/>
-            <AttributeMapRow attr="brand" v-model="mapping.brand"/>
-            <AttributeMapRow attr="images" v-model="mapping.images"/>
-            <AttributeMapRow attr="variation_theme" v-model="mapping.variation_theme"/>
+        <div v-if="optionalAttrs.length" class="border rounded p-4">
+            <h3 class="font-semibold mb-2">Optional Attributes</h3>
+            <AttributeMapRow v-for="a in optionalAttrs" :key="a" :attr="a" v-model="mapping.attributes[a]"/>
+        </div>
+
+        <div class="flex gap-2 justify-end mt-4">
+            <button @click="queuePublish" class="bg-emerald-600 text-white rounded px-4 py-2">Publish with Mapping</button>
+            <button @click="goPreview"
+                    :disabled="!productId || !channelId"
+                    class="rounded px-4 py-2"
+                    :class="!productId || !channelId ? 'bg-gray-300 text-gray-600' : 'bg-black text-white'">
+                Preview
+            </button>
         </div>
     </div>
-
-    <div class="flex gap-2 justify-end mt-4">
-        <button @click="queuePublish" class="bg-emerald-600 text-white rounded px-4 py-2">Publish with Mapping</button>
-        <button @click="goPreview"
-                :disabled="!productId || !channelId"
-                class="rounded px-4 py-2"
-                :class="!productId || !channelId ? 'bg-gray-300 text-gray-600' : 'bg-black text-white'">
-            Preview
-        </button>
-    </div>
-
 </template>
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
-import AttributeMapRow from '@/components/AttributeMapRow.vue'
+import AttributeMapRow from '@/Components/AttributeMapRow.vue'
 
 
 const channels = ref([])

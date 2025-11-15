@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Link } from '@inertiajs/vue3'
-import TopbarLinks from '@/Components/Nav/TopbarLinks.vue'
+import TopbarLinks from '@/Components/Nav/TopBarLinks.vue'
 import ChannelSelect from '@/Components/Nav/ChannelSelect.vue'
 
 

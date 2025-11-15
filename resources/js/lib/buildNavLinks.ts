@@ -1,4 +1,11 @@
-import route from 'ziggy-js'
+// Ziggy routing helper - using window.route for now (provided by Laravel/Ziggy)
+// import route from 'ziggy-js'
+declare global {
+    interface Window {
+        route: any;
+    }
+}
+const route = window.route || ((name: string, params?: any) => `/${name}`);
 
 
 export type NavItem = {
