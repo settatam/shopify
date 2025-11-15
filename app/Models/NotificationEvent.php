@@ -14,6 +14,7 @@ class NotificationEvent extends Model
         'name',
         'description',
         'category',
+        'required_permission',
         'available_variables',
         'is_system',
         'enabled_by_default',

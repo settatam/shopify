@@ -138,10 +138,51 @@ class NotificationService
     }
 
     /**
+     * Send notification to all users in a shop with specific permission.
+     *
+     * @param Shop $shop
+     * @param string $eventType
+     * @param array $variables
+     * @param string $requiredPermission
+     * @param array $metadata
+     * @param string $channel
+     * @return array
+     */
+    public function sendToUsersWithPermission(
+        Shop $shop,
+        string $eventType,
+        array $variables = [],
+        string $requiredPermission = '',
+        array $metadata = [],
+        string $channel = 'email'
+    ): array {
+        // Get all users for this shop
+        $users = User::where('shop_id', $shop->id)->get();
+
+        // Filter users who have the required permission
+        $eligibleUsers = $users->filter(function ($user) use ($requiredPermission) {
+            return $user->hasPermission($requiredPermission);
+        });
+
+        return $this->sendBulk($eventType, $eligibleUsers->all(), $variables, $metadata, $channel);
+    }
+
+    /**
      * Check if notifications are enabled for user.
      */
     protected function isEnabled(User $user, string $eventType, string $channel): bool
     {
+        // First, check if user has permission to receive this notification
+        if (!$user->canReceiveNotification($eventType)) {
+            Log::info('Notification skipped - user lacks required permission', [
+                'event_type' => $eventType,
+                'user_id' => $user->id,
+                'user_role' => $user->role,
+            ]);
+            return false;
+        }
+
+        // Then check user preferences
         $preference = NotificationPreference::forUser($user)
             ->forEvent($eventType)
             ->first();
