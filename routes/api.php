@@ -30,6 +30,7 @@ use App\Http\Controllers\Dejavoo\SettingsController as DejavooSettingsController
 use App\Http\Controllers\Dejavoo\PaymentController as DejavooPaymentController;
 use App\Http\Controllers\Dashboard\SalesDashboardController;
 use App\Http\Controllers\ZohoInventory\AuthController as ZohoInventoryAuthController;
+use App\Http\Controllers\ZohoInventory\ZohoAppController;
 use App\Http\Controllers\Api\AICategoryMappingController;
 use App\Http\Controllers\Api\AIOptimizationController;
 use App\Http\Controllers\Api\SmartPublishController;
@@ -244,6 +245,27 @@ Route::prefix('zoho-inventory')->group(function() {
     Route::post('/channels/{channel}/switch-organization', [ZohoInventoryAuthController::class, 'switchOrganization'])->middleware('auth:sanctum');
     Route::get('/channels/{channel}/warehouses', [ZohoInventoryAuthController::class, 'getWarehouses'])->middleware('auth:sanctum');
     Route::post('/channels/{channel}/settings', [ZohoInventoryAuthController::class, 'updateSettings'])->middleware('auth:sanctum');
+});
+
+// Zoho App Marketplace Installation (public endpoints)
+Route::prefix('zoho-app')->group(function() {
+    // Installation flow (no auth required)
+    Route::get('/install', [ZohoAppController::class, 'install']);
+    Route::get('/callback', [ZohoAppController::class, 'callback']);
+
+    // Organization selection (for users with multiple orgs)
+    Route::get('/organizations', [ZohoAppController::class, 'getOrganizationOptions']);
+    Route::post('/select-organization', [ZohoAppController::class, 'selectOrganization']);
+
+    // Onboarding (token-based auth)
+    Route::get('/onboarding/status', [ZohoAppController::class, 'getOnboardingStatus']);
+    Route::post('/onboarding/complete', [ZohoAppController::class, 'completeOnboarding']);
+
+    // Status check
+    Route::get('/status', [ZohoAppController::class, 'checkStatus']);
+
+    // Uninstall webhook (Zoho calls this)
+    Route::post('/uninstall', [ZohoAppController::class, 'uninstall']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){
