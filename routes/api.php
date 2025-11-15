@@ -31,6 +31,7 @@ use App\Http\Controllers\Dashboard\SalesDashboardController;
 use App\Http\Controllers\ZohoInventory\AuthController as ZohoInventoryAuthController;
 use App\Http\Controllers\Api\AICategoryMappingController;
 use App\Http\Controllers\Api\AIOptimizationController;
+use App\Http\Controllers\Api\SmartPublishController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -321,6 +322,19 @@ Route::middleware(['auth:sanctum'])->group(function(){
         Route::get('/statistics', [AIOptimizationController::class, 'getStatistics']);
         Route::delete('/{optimization}', [AIOptimizationController::class, 'deleteOptimization']);
         Route::post('/products/{product}/preview', [AIOptimizationController::class, 'previewOptimization']);
+    });
+
+    // Smart Publish - One-Click Publishing
+    Route::prefix('smart-publish')->group(function() {
+        Route::post('/products/{product}/publish', [SmartPublishController::class, 'publish']);
+        Route::post('/products/{product}/preview', [SmartPublishController::class, 'preview']);
+        Route::get('/products/{product}/reports', [SmartPublishController::class, 'getProductReports']);
+        Route::get('/reports', [SmartPublishController::class, 'getUserReports']);
+        Route::get('/reports/{report}', [SmartPublishController::class, 'getReport']);
+        Route::post('/reports/{report}/retry', [SmartPublishController::class, 'retry']);
+        Route::post('/reports/{report}/cancel', [SmartPublishController::class, 'cancel']);
+        Route::delete('/reports/{report}', [SmartPublishController::class, 'delete']);
+        Route::get('/statistics', [SmartPublishController::class, 'getStatistics']);
     });
 
 });
