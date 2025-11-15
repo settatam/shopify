@@ -68,4 +68,10 @@ return [
         'api_url' => env('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions'),
     ],
 
+    'walmart' => [
+        'client_id' => env('WALMART_CLIENT_ID'),
+        'client_secret' => env('WALMART_CLIENT_SECRET'),
+        'sandbox' => env('WALMART_SANDBOX', true),
+    ],
+
 ];

@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\LocationsController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\Api\{ChannelAuthController, MappingsController, PublishController, ShopifyWebhooksController};
 use App\Http\Controllers\Api\AIMappingController;
+use App\Http\Controllers\Walmart\AuthController as WalmartAuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -71,6 +72,13 @@ Route::post('/channels/{channel}/ebay/location', [EbayPoliciesController::class,
 Route::get('/products/{product}', [ProductsController::class, 'show']);
 Route::get('/mappings/effective', [EffectiveMappingController::class, 'show']);
 Route::get('/channels/{channel}/state', [ChannelStateController::class, 'show']);
+
+// Walmart integration
+Route::prefix('walmart')->group(function() {
+    Route::post('/connect', [WalmartAuthController::class, 'store'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/disconnect', [WalmartAuthController::class, 'disconnect'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/test', [WalmartAuthController::class, 'test'])->middleware('auth:sanctum');
+});
 
 Route::middleware(['auth:sanctum'])->group(function(){
 // Locations
