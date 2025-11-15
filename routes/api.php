@@ -28,6 +28,7 @@ use App\Http\Controllers\POS\CashRegisterController;
 use App\Http\Controllers\Dejavoo\SettingsController as DejavooSettingsController;
 use App\Http\Controllers\Dejavoo\PaymentController as DejavooPaymentController;
 use App\Http\Controllers\Dashboard\SalesDashboardController;
+use App\Http\Controllers\ZohoInventory\AuthController as ZohoInventoryAuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -208,6 +209,18 @@ Route::prefix('dejavoo')->middleware('auth:sanctum')->group(function() {
 // Sales Dashboard with real-time updates
 Route::middleware('auth:sanctum')->group(function() {
     Route::get('/dashboard/sales', [SalesDashboardController::class, 'index']);
+});
+
+// Zoho Inventory integration
+Route::prefix('zoho-inventory')->group(function() {
+    Route::get('/authorize', [ZohoInventoryAuthController::class, 'authorize'])->middleware('auth:sanctum');
+    Route::get('/callback', [ZohoInventoryAuthController::class, 'callback']);
+    Route::post('/channels/{channel}/disconnect', [ZohoInventoryAuthController::class, 'disconnect'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/test', [ZohoInventoryAuthController::class, 'test'])->middleware('auth:sanctum');
+    Route::get('/channels/{channel}/organizations', [ZohoInventoryAuthController::class, 'getOrganizations'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/switch-organization', [ZohoInventoryAuthController::class, 'switchOrganization'])->middleware('auth:sanctum');
+    Route::get('/channels/{channel}/warehouses', [ZohoInventoryAuthController::class, 'getWarehouses'])->middleware('auth:sanctum');
+    Route::post('/channels/{channel}/settings', [ZohoInventoryAuthController::class, 'updateSettings'])->middleware('auth:sanctum');
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){

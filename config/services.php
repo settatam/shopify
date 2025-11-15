@@ -105,4 +105,11 @@ return [
         'webhook_signature_key' => env('SQUARE_WEBHOOK_SIGNATURE_KEY'),
     ],
 
+    'zoho_inventory' => [
+        'client_id' => env('ZOHO_INVENTORY_CLIENT_ID'),
+        'client_secret' => env('ZOHO_INVENTORY_CLIENT_SECRET'),
+        'redirect_uri' => env('ZOHO_INVENTORY_REDIRECT_URI'),
+        'datacenter' => env('ZOHO_INVENTORY_DATACENTER', 'com'), // com, eu, in, etc.
+    ],
+
 ];
