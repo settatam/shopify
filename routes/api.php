@@ -29,6 +29,7 @@ use App\Http\Controllers\Dejavoo\SettingsController as DejavooSettingsController
 use App\Http\Controllers\Dejavoo\PaymentController as DejavooPaymentController;
 use App\Http\Controllers\Dashboard\SalesDashboardController;
 use App\Http\Controllers\ZohoInventory\AuthController as ZohoInventoryAuthController;
+use App\Http\Controllers\Api\AICategoryMappingController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -287,6 +288,21 @@ Route::middleware(['auth:sanctum'])->group(function(){
         Route::post('/suggestions/batch-approve', [AIMappingController::class, 'batchApprove']);
         Route::post('/suggestions/batch-reject', [AIMappingController::class, 'batchReject']);
         Route::get('/statistics', [AIMappingController::class, 'getStatistics']);
+    });
+
+    // AI Category Mapping
+    Route::prefix('ai-category-mapping')->group(function() {
+        Route::post('/products/{product}/generate', [AICategoryMappingController::class, 'generateForProduct']);
+        Route::get('/products/{product}/mappings', [AICategoryMappingController::class, 'getMappings']);
+        Route::get('/pending', [AICategoryMappingController::class, 'getPendingMappings']);
+        Route::post('/{mapping}/approve', [AICategoryMappingController::class, 'approveMapping']);
+        Route::post('/{mapping}/reject', [AICategoryMappingController::class, 'rejectMapping']);
+        Route::post('/{mapping}/modify', [AICategoryMappingController::class, 'modifyMapping']);
+        Route::post('/batch-approve', [AICategoryMappingController::class, 'batchApprove']);
+        Route::post('/batch-reject', [AICategoryMappingController::class, 'batchReject']);
+        Route::post('/batch-generate', [AICategoryMappingController::class, 'batchGenerate']);
+        Route::get('/statistics', [AICategoryMappingController::class, 'getStatistics']);
+        Route::delete('/{mapping}', [AICategoryMappingController::class, 'deleteMapping']);
     });
 
 });
