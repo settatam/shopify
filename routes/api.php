@@ -18,6 +18,7 @@ use App\Http\Controllers\Walmart\AuthController as WalmartAuthController;
 use App\Http\Controllers\Etsy\AuthController as EtsyAuthController;
 use App\Http\Controllers\QuickBooks\AuthController as QuickBooksAuthController;
 use App\Http\Controllers\Xero\AuthController as XeroAuthController;
+use App\Http\Controllers\Twilio\SettingsController as TwilioSettingsController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -107,6 +108,17 @@ Route::prefix('xero')->group(function() {
     Route::post('/channels/{channel}/disconnect', [XeroAuthController::class, 'disconnect'])->middleware('auth:sanctum');
     Route::post('/channels/{channel}/test', [XeroAuthController::class, 'test'])->middleware('auth:sanctum');
     Route::get('/channels/{channel}/accounts', [XeroAuthController::class, 'getAccounts'])->middleware('auth:sanctum');
+});
+
+// Twilio notifications
+Route::prefix('twilio')->middleware('auth:sanctum')->group(function() {
+    Route::get('/settings', [TwilioSettingsController::class, 'index']);
+    Route::post('/credentials', [TwilioSettingsController::class, 'updateCredentials']);
+    Route::post('/test-connection', [TwilioSettingsController::class, 'testConnection']);
+    Route::post('/send-test', [TwilioSettingsController::class, 'sendTest']);
+    Route::post('/templates', [TwilioSettingsController::class, 'updateTemplates']);
+    Route::get('/history', [TwilioSettingsController::class, 'getHistory']);
+    Route::post('/disconnect', [TwilioSettingsController::class, 'disconnect']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){
