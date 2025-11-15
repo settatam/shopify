@@ -23,6 +23,8 @@ use App\Http\Controllers\Square\AuthController as SquareAuthController;
 use App\Http\Controllers\Square\WebhookController as SquareWebhookController;
 use App\Http\Controllers\ShipStation\SettingsController as ShipStationSettingsController;
 use App\Http\Controllers\ShipStation\WebhookController as ShipStationWebhookController;
+use App\Http\Controllers\POS\POSController;
+use App\Http\Controllers\POS\CashRegisterController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -155,6 +157,31 @@ Route::prefix('shipstation')->middleware('auth:sanctum')->group(function() {
 
 // ShipStation webhooks (unauthenticated)
 Route::post('/shipstation/webhook', [ShipStationWebhookController::class, 'handle']);
+
+// POS (Point of Sale) - Cash and check sales
+Route::prefix('pos')->middleware('auth:sanctum')->group(function() {
+    // Cash Registers
+    Route::get('/registers', [CashRegisterController::class, 'index']);
+    Route::post('/registers', [CashRegisterController::class, 'store']);
+    Route::get('/registers/{id}', [CashRegisterController::class, 'show']);
+    Route::put('/registers/{id}', [CashRegisterController::class, 'update']);
+    Route::delete('/registers/{id}', [CashRegisterController::class, 'destroy']);
+    Route::post('/registers/{id}/open', [CashRegisterController::class, 'open']);
+    Route::post('/registers/{id}/close', [CashRegisterController::class, 'close']);
+    Route::post('/registers/{id}/cash-in', [CashRegisterController::class, 'cashIn']);
+    Route::post('/registers/{id}/cash-out', [CashRegisterController::class, 'cashOut']);
+    Route::get('/registers/{id}/activities', [CashRegisterController::class, 'getActivities']);
+    Route::get('/registers/{id}/summary', [CashRegisterController::class, 'getSummary']);
+
+    // POS Transactions
+    Route::get('/products', [POSController::class, 'getProducts']);
+    Route::post('/search-product', [POSController::class, 'searchProduct']);
+    Route::post('/transactions', [POSController::class, 'createTransaction']);
+    Route::get('/transactions', [POSController::class, 'getTransactions']);
+    Route::get('/transactions/{id}', [POSController::class, 'getTransaction']);
+    Route::post('/transactions/{id}/void', [POSController::class, 'voidTransaction']);
+    Route::get('/sales-summary', [POSController::class, 'getSalesSummary']);
+});
 
 Route::middleware(['auth:sanctum'])->group(function(){
 // Locations
