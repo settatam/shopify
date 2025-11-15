@@ -62,4 +62,10 @@ return [
         'host_fe' => env('AMZ_API_HOST_FE', 'sellingpartnerapi-fe.amazon.com'),
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'model' => env('OPENAI_MODEL', 'gpt-4-turbo-preview'),
+        'api_url' => env('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions'),
+    ],
+
 ];

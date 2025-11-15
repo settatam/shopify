@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\LocationsController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\Api\{ChannelAuthController, MappingsController, PublishController, ShopifyWebhooksController};
+use App\Http\Controllers\Api\AIMappingController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -125,5 +126,16 @@ Route::middleware(['auth:sanctum'])->group(function(){
         Route::post('/channels/{channel}/sync-inventory', [ChannelSyncController::class, 'syncChannel']); // optional variantIds[]
     });
 
+    // AI Product Mapping
+    Route::prefix('ai-mapping')->group(function() {
+        Route::post('/products/{product}/generate', [AIMappingController::class, 'generateForProduct']);
+        Route::get('/products/{product}/suggestions', [AIMappingController::class, 'getSuggestions']);
+        Route::post('/suggestions/{suggestion}/approve', [AIMappingController::class, 'approveSuggestion']);
+        Route::post('/suggestions/{suggestion}/reject', [AIMappingController::class, 'rejectSuggestion']);
+        Route::put('/suggestions/{suggestion}', [AIMappingController::class, 'updateSuggestion']);
+        Route::post('/suggestions/batch-approve', [AIMappingController::class, 'batchApprove']);
+        Route::post('/suggestions/batch-reject', [AIMappingController::class, 'batchReject']);
+        Route::get('/statistics', [AIMappingController::class, 'getStatistics']);
+    });
 
 });
