@@ -25,6 +25,8 @@ use App\Http\Controllers\ShipStation\SettingsController as ShipStationSettingsCo
 use App\Http\Controllers\ShipStation\WebhookController as ShipStationWebhookController;
 use App\Http\Controllers\POS\POSController;
 use App\Http\Controllers\POS\CashRegisterController;
+use App\Http\Controllers\Dejavoo\SettingsController as DejavooSettingsController;
+use App\Http\Controllers\Dejavoo\PaymentController as DejavooPaymentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -181,6 +183,25 @@ Route::prefix('pos')->middleware('auth:sanctum')->group(function() {
     Route::get('/transactions/{id}', [POSController::class, 'getTransaction']);
     Route::post('/transactions/{id}/void', [POSController::class, 'voidTransaction']);
     Route::get('/sales-summary', [POSController::class, 'getSalesSummary']);
+});
+
+// Dejavoo payment processing
+Route::prefix('dejavoo')->middleware('auth:sanctum')->group(function() {
+    // Settings
+    Route::get('/settings', [DejavooSettingsController::class, 'index']);
+    Route::post('/credentials', [DejavooSettingsController::class, 'updateCredentials']);
+    Route::post('/settings', [DejavooSettingsController::class, 'updateSettings']);
+    Route::post('/test-connection', [DejavooSettingsController::class, 'testConnection']);
+    Route::post('/batch-close', [DejavooSettingsController::class, 'batchClose']);
+    Route::post('/disconnect', [DejavooSettingsController::class, 'disconnect']);
+
+    // Payment Processing
+    Route::post('/process-payment', [DejavooPaymentController::class, 'processPayment']);
+    Route::post('/void-payment', [DejavooPaymentController::class, 'voidPayment']);
+    Route::post('/refund-payment', [DejavooPaymentController::class, 'refundPayment']);
+    Route::post('/tip-adjustment', [DejavooPaymentController::class, 'tipAdjustment']);
+    Route::post('/get-status', [DejavooPaymentController::class, 'getStatus']);
+    Route::post('/cancel', [DejavooPaymentController::class, 'cancel']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){

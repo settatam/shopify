@@ -29,6 +29,7 @@ class PosTransaction extends Model
         'notes',
         'processed_by_user_id',
         'line_items',
+        'payment_data',
         'completed_at',
         'status',
         'voided_at',
@@ -44,6 +45,7 @@ class PosTransaction extends Model
         'amount_tendered' => 'decimal:2',
         'change_given' => 'decimal:2',
         'line_items' => 'array',
+        'payment_data' => 'array',
         'completed_at' => 'datetime',
         'voided_at' => 'datetime',
     ];
