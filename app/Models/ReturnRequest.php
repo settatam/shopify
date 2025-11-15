@@ -19,7 +19,7 @@ class ReturnRequest extends Model
         'rma_number',
         'order_number',
         'channel_id',
-        'channel_order_id',
+        'external_order_id',
         'customer_name',
         'customer_email',
         'customer_phone',

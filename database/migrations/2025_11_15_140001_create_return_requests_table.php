@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('rma_number')->unique(); // Return Merchandise Authorization number
             $table->string('order_number')->index();
             $table->foreignId('channel_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('channel_order_id')->nullable(); // External order ID from channel
+            $table->string('external_order_id')->nullable(); // External order ID from marketplace (eBay, Amazon, etc.)
 
             // Customer Information
             $table->string('customer_name');

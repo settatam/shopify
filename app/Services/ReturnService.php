@@ -37,6 +37,7 @@ class ReturnService
                 'order_number' => $data['order_number'],
                 'channel_order_id' => $data['channel_order_id'] ?? null,
                 'channel_id' => $data['channel_id'] ?? null,
+                'external_order_id' => $data['external_order_id'] ?? null,
                 'customer_name' => $data['customer_name'],
                 'customer_email' => $data['customer_email'],
                 'customer_phone' => $data['customer_phone'] ?? null,
