@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\AICategoryMappingController;
 use App\Http\Controllers\Api\AIOptimizationController;
 use App\Http\Controllers\Api\SmartPublishController;
 use App\Http\Controllers\Api\AutoRelistController;
+use App\Http\Controllers\Api\ReturnController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -359,6 +360,32 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
         // Statistics
         Route::get('/statistics', [AutoRelistController::class, 'getStatistics']);
+    });
+
+    // Returns & Refunds Management
+    Route::prefix('returns')->group(function() {
+        // Return Requests
+        Route::get('/', [ReturnController::class, 'getReturns']);
+        Route::get('/pending-approvals', [ReturnController::class, 'getPendingApprovals']);
+        Route::post('/', [ReturnController::class, 'createReturn']);
+        Route::get('/{return}', [ReturnController::class, 'getReturn']);
+        Route::put('/{return}', [ReturnController::class, 'updateReturn']);
+        Route::post('/{return}/approve', [ReturnController::class, 'approveReturn']);
+        Route::post('/{return}/reject', [ReturnController::class, 'rejectReturn']);
+        Route::post('/{return}/received', [ReturnController::class, 'markReceived']);
+        Route::post('/{return}/inspection', [ReturnController::class, 'completeInspection']);
+        Route::post('/{return}/restock', [ReturnController::class, 'restockItems']);
+        Route::post('/{return}/complete', [ReturnController::class, 'completeReturn']);
+        Route::delete('/{return}', [ReturnController::class, 'deleteReturn']);
+
+        // Refunds
+        Route::get('/refunds/{refund}', [ReturnController::class, 'getRefund']);
+        Route::post('/refunds', [ReturnController::class, 'createRefund']);
+        Route::post('/refunds/{refund}/process', [ReturnController::class, 'processRefund']);
+        Route::post('/refunds/{refund}/retry', [ReturnController::class, 'retryRefund']);
+
+        // Statistics
+        Route::get('/statistics', [ReturnController::class, 'getStatistics']);
     });
 
 });
