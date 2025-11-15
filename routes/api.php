@@ -32,6 +32,7 @@ use App\Http\Controllers\ZohoInventory\AuthController as ZohoInventoryAuthContro
 use App\Http\Controllers\Api\AICategoryMappingController;
 use App\Http\Controllers\Api\AIOptimizationController;
 use App\Http\Controllers\Api\SmartPublishController;
+use App\Http\Controllers\Api\AutoRelistController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -335,6 +336,29 @@ Route::middleware(['auth:sanctum'])->group(function(){
         Route::post('/reports/{report}/cancel', [SmartPublishController::class, 'cancel']);
         Route::delete('/reports/{report}', [SmartPublishController::class, 'delete']);
         Route::get('/statistics', [SmartPublishController::class, 'getStatistics']);
+    });
+
+    // Auto-Relist - Dead Listing Reviver
+    Route::prefix('auto-relist')->group(function() {
+        // Campaign Management
+        Route::get('/campaigns', [AutoRelistController::class, 'getCampaigns']);
+        Route::get('/campaigns/{campaign}', [AutoRelistController::class, 'getCampaign']);
+        Route::post('/campaigns', [AutoRelistController::class, 'createCampaign']);
+        Route::put('/campaigns/{campaign}', [AutoRelistController::class, 'updateCampaign']);
+        Route::delete('/campaigns/{campaign}', [AutoRelistController::class, 'deleteCampaign']);
+        Route::post('/campaigns/{campaign}/run', [AutoRelistController::class, 'runCampaign']);
+
+        // Action Management
+        Route::get('/pending-approvals', [AutoRelistController::class, 'getPendingApprovals']);
+        Route::get('/actions/{action}', [AutoRelistController::class, 'getAction']);
+        Route::get('/products/{productId}/actions', [AutoRelistController::class, 'getProductActions']);
+        Route::post('/actions/{action}/approve', [AutoRelistController::class, 'approveAction']);
+        Route::post('/actions/{action}/reject', [AutoRelistController::class, 'rejectAction']);
+        Route::post('/actions/bulk-approve', [AutoRelistController::class, 'bulkApprove']);
+        Route::delete('/actions/{action}', [AutoRelistController::class, 'deleteAction']);
+
+        // Statistics
+        Route::get('/statistics', [AutoRelistController::class, 'getStatistics']);
     });
 
 });
