@@ -37,6 +37,7 @@ use App\Http\Controllers\Api\SmartPublishController;
 use App\Http\Controllers\Api\AutoRelistController;
 use App\Http\Controllers\Api\ReturnController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\TeamController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -462,5 +463,31 @@ Route::middleware(['auth:sanctum'])->group(function(){
     // Notification tracking (no auth required)
     Route::get('/notifications/track/open/{id}', [NotificationController::class, 'trackOpen'])->name('notifications.track.open');
     Route::get('/notifications/track/click/{id}', [NotificationController::class, 'trackClick'])->name('notifications.track.click');
+
+    // Team Management Module
+    Route::prefix('team')->group(function() {
+        // Team Members
+        Route::get('/members', [TeamController::class, 'getMembers']);
+        Route::post('/members/{member}/role', [TeamController::class, 'updateMemberRole']);
+        Route::delete('/members/{member}', [TeamController::class, 'removeMember']);
+
+        // Invitations
+        Route::get('/invitations/pending', [TeamController::class, 'getPendingInvitations']);
+        Route::post('/invitations', [TeamController::class, 'invite']);
+        Route::post('/invitations/bulk', [TeamController::class, 'bulkInvite']);
+        Route::post('/invitations/{invitation}/resend', [TeamController::class, 'resendInvitation']);
+        Route::delete('/invitations/{invitation}', [TeamController::class, 'revokeInvitation']);
+
+        // Roles
+        Route::get('/roles', [TeamController::class, 'getRoles']);
+
+        // Statistics
+        Route::get('/statistics', [TeamController::class, 'getStatistics']);
+    });
+
+    // Public team invitation endpoints (no auth required)
+    Route::get('/team/invitations/{token}', [TeamController::class, 'getInvitation'])->name('team.invitation');
+    Route::post('/team/invitations/{token}/accept', [TeamController::class, 'acceptInvitation'])->name('team.invitation.accept');
+    Route::post('/team/invitations/{token}/accept-existing', [TeamController::class, 'acceptInvitationExisting'])->middleware('auth:sanctum')->name('team.invitation.accept-existing');
 
 });
