@@ -7,6 +7,7 @@ use App\Models\CashRegister;
 use App\Models\PosTransaction;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Events\NewSaleEvent;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -242,6 +243,9 @@ class POSController extends Controller
             $cashRegister->recordSale($transaction);
 
             DB::commit();
+
+            // Broadcast new sale event for real-time dashboard
+            NewSaleEvent::fromPosTransaction($transaction)->dispatch();
 
             return response()->json([
                 'success' => true,

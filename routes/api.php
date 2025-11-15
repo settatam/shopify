@@ -27,6 +27,7 @@ use App\Http\Controllers\POS\POSController;
 use App\Http\Controllers\POS\CashRegisterController;
 use App\Http\Controllers\Dejavoo\SettingsController as DejavooSettingsController;
 use App\Http\Controllers\Dejavoo\PaymentController as DejavooPaymentController;
+use App\Http\Controllers\Dashboard\SalesDashboardController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -202,6 +203,11 @@ Route::prefix('dejavoo')->middleware('auth:sanctum')->group(function() {
     Route::post('/tip-adjustment', [DejavooPaymentController::class, 'tipAdjustment']);
     Route::post('/get-status', [DejavooPaymentController::class, 'getStatus']);
     Route::post('/cancel', [DejavooPaymentController::class, 'cancel']);
+});
+
+// Sales Dashboard with real-time updates
+Route::middleware('auth:sanctum')->group(function() {
+    Route::get('/dashboard/sales', [SalesDashboardController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){

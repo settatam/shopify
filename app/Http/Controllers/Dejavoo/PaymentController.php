@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dejavoo;
 use App\Http\Controllers\Controller;
 use App\Models\PosTransaction;
 use App\Services\Dejavoo\DejavooClient;
+use App\Events\NewSaleEvent;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -76,6 +77,9 @@ class PaymentController extends Controller
                     'payment_method' => 'card',
                     'payment_data' => $client->buildPaymentData($response),
                 ]);
+
+                // Broadcast new sale event for real-time dashboard
+                NewSaleEvent::fromPosTransaction($posTransaction)->dispatch();
             }
 
             DB::commit();
