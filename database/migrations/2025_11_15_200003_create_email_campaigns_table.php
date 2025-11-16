@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('email_campaigns', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shop_id')->constrained()->onDelete('cascade');
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             // Provider info
             $table->enum('provider', ['mailchimp', 'sendgrid', 'custom'])->default('mailchimp');
@@ -61,9 +60,8 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index(['shop_id', 'status']);
-            $table->index(['shop_id', 'provider']);
-            $table->index(['shop_id', 'created_by']);
+            $table->index(['user_id', 'status']);
+            $table->index(['user_id', 'provider']);
         });
     }
 

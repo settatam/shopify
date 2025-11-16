@@ -12,7 +12,7 @@ class EmailProviderSetting extends Model
     use HasFactory;
 
     protected $fillable = [
-        'shop_id',
+        'user_id',
         'provider',
         'is_active',
         'is_primary',
@@ -54,11 +54,11 @@ class EmailProviderSetting extends Model
     ];
 
     /**
-     * Get the shop that owns the email provider setting.
+     * Get the user that owns the email provider setting.
      */
-    public function shop(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Shop::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -181,31 +181,31 @@ class EmailProviderSetting extends Model
     }
 
     /**
-     * Scope: Get primary provider for shop.
+     * Scope: Get primary provider for user.
      */
-    public function scopePrimary($query, int $shopId)
+    public function scopePrimary($query, int $userId)
     {
-        return $query->where('shop_id', $shopId)
+        return $query->where('user_id', $userId)
                     ->where('is_primary', true)
                     ->where('is_active', true)
                     ->first();
     }
 
     /**
-     * Scope: Get active providers for shop.
+     * Scope: Get active providers for user.
      */
-    public function scopeActive($query, int $shopId)
+    public function scopeActive($query, int $userId)
     {
-        return $query->where('shop_id', $shopId)
+        return $query->where('user_id', $userId)
                     ->where('is_active', true);
     }
 
     /**
      * Scope: Get provider by type.
      */
-    public function scopeByProvider($query, int $shopId, string $provider)
+    public function scopeByProvider($query, int $userId, string $provider)
     {
-        return $query->where('shop_id', $shopId)
+        return $query->where('user_id', $userId)
                     ->where('provider', $provider)
                     ->first();
     }

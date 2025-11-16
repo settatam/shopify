@@ -19,11 +19,11 @@ class SendGridController extends Controller
      */
     public function getConfiguration(Request $request): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
-        $settings = EmailProviderSetting::byProvider($shop->id, 'sendgrid');
+        $settings = EmailProviderSetting::byProvider($request->user()->id, 'sendgrid');
 
         if (!$settings) {
             return response()->json([
@@ -52,7 +52,7 @@ class SendGridController extends Controller
      */
     public function configure(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'api_key' => 'required|string',
@@ -62,11 +62,11 @@ class SendGridController extends Controller
             'is_primary' => 'nullable|boolean',
         ]);
 
-        $shop = $request->user()->shop;
+        
 
         try {
             $settings = $this->sendGridService->configure(
-                shop: $shop,
+                user: $request->user(),
                 apiKey: $request->api_key,
                 fromEmail: $request->from_email,
                 fromName: $request->from_name,
@@ -97,15 +97,15 @@ class SendGridController extends Controller
      */
     public function testConfiguration(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'test_email' => 'required|email',
         ]);
 
-        $shop = $request->user()->shop;
 
-        $success = $this->sendGridService->testConfiguration($shop, $request->test_email);
+
+        $success = $this->sendGridService->testConfiguration($request->user(), $request->test_email);
 
         if ($success) {
             return response()->json([
@@ -123,14 +123,14 @@ class SendGridController extends Controller
      */
     public function getStatistics(Request $request): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        $shop = $request->user()->shop;
+
 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $stats = $this->sendGridService->getStatistics($shop, $startDate, $endDate);
+        $stats = $this->sendGridService->getStatistics($request->user(), $startDate, $endDate);
 
         if (!$stats) {
             return response()->json([
@@ -148,7 +148,7 @@ class SendGridController extends Controller
      */
     public function sendTestEmail(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'to' => 'required|email',
@@ -157,10 +157,10 @@ class SendGridController extends Controller
             'text_content' => 'nullable|string',
         ]);
 
-        $shop = $request->user()->shop;
+        
 
         $success = $this->sendGridService->send(
-            shop: $shop,
+            user: $request->user(),
             to: $request->to,
             subject: $request->subject,
             htmlContent: $request->html_content,
@@ -183,7 +183,7 @@ class SendGridController extends Controller
      */
     public function updateSettings(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'is_active' => 'nullable|boolean',
@@ -193,9 +193,9 @@ class SendGridController extends Controller
             'reply_to' => 'nullable|email',
         ]);
 
-        $shop = $request->user()->shop;
+        
 
-        $settings = EmailProviderSetting::byProvider($shop->id, 'sendgrid');
+        $settings = EmailProviderSetting::byProvider($request->user()->id, 'sendgrid');
 
         if (!$settings) {
             return response()->json([
@@ -228,11 +228,11 @@ class SendGridController extends Controller
      */
     public function disconnect(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
-        $settings = EmailProviderSetting::byProvider($shop->id, 'sendgrid');
+        $settings = EmailProviderSetting::byProvider($request->user()->id, 'sendgrid');
 
         if (!$settings) {
             return response()->json([

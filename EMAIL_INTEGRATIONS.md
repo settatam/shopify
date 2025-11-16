@@ -37,7 +37,7 @@ The platform supports two powerful email integrations:
 - **Automatic Sync** - Subscribers auto-synced with Mailchimp audiences
 - **Campaign Management** - Create, schedule, and track marketing campaigns
 - **Detailed Analytics** - Track opens, clicks, bounces, and unsubscribes
-- **Shop-Scoped** - Each shop has its own configuration
+- **Shop-Scoped** - Each user has its own configuration
 
 ---
 

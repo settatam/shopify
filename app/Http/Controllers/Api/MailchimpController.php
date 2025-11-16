@@ -21,11 +21,11 @@ class MailchimpController extends Controller
      */
     public function getConfiguration(Request $request): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
-        $settings = EmailProviderSetting::byProvider($shop->id, 'mailchimp');
+        $settings = EmailProviderSetting::byProvider($request->user()->id, 'mailchimp');
 
         if (!$settings) {
             return response()->json([
@@ -54,7 +54,7 @@ class MailchimpController extends Controller
      */
     public function configure(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'api_key' => 'required|string',
@@ -64,11 +64,11 @@ class MailchimpController extends Controller
             'reply_to' => 'nullable|email',
         ]);
 
-        $shop = $request->user()->shop;
+        
 
         try {
             $settings = $this->mailchimpService->configure(
-                shop: $shop,
+                user: $request->user(),
                 apiKey: $request->api_key,
                 defaultAudienceId: $request->default_audience_id,
                 fromEmail: $request->from_email,
@@ -99,9 +99,9 @@ class MailchimpController extends Controller
      */
     public function getAudiences(Request $request): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
         $audiences = $this->mailchimpService->getAudiences($shop);
 
@@ -121,7 +121,7 @@ class MailchimpController extends Controller
      */
     public function addSubscriber(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'email' => 'required|email',
@@ -132,10 +132,10 @@ class MailchimpController extends Controller
             'merge_fields' => 'nullable|array',
         ]);
 
-        $shop = $request->user()->shop;
+        
 
         $subscriber = $this->mailchimpService->addSubscriber(
-            shop: $shop,
+            user: $request->user(),
             email: $request->email,
             firstName: $request->first_name,
             lastName: $request->last_name,
@@ -161,13 +161,13 @@ class MailchimpController extends Controller
      */
     public function unsubscribe(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'email' => 'required|email',
         ]);
 
-        $shop = $request->user()->shop;
+        
 
         $success = $this->mailchimpService->unsubscribe($shop, $request->email);
 
@@ -187,11 +187,11 @@ class MailchimpController extends Controller
      */
     public function getSubscribers(Request $request): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
-        $query = MailchimpSubscriber::where('shop_id', $shop->id);
+        $query = MailchimpSubscriber::where('user_id', $request->user()->id);
 
         // Filter by status
         if ($request->has('status')) {
@@ -219,12 +219,12 @@ class MailchimpController extends Controller
      */
     public function syncSubscribers(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
         $count = $this->mailchimpService->syncSubscribers(
-            shop: $shop,
+            user: $request->user(),
             audienceId: $request->input('audience_id')
         );
 
@@ -239,12 +239,12 @@ class MailchimpController extends Controller
      */
     public function getSubscriberCount(Request $request): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
         $count = $this->mailchimpService->getSubscriberCount(
-            shop: $shop,
+            user: $request->user(),
             audienceId: $request->input('audience_id')
         );
 
@@ -264,7 +264,7 @@ class MailchimpController extends Controller
      */
     public function createCampaign(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -274,11 +274,11 @@ class MailchimpController extends Controller
             'audience_id' => 'nullable|string',
         ]);
 
-        $shop = $request->user()->shop;
+        
 
         $campaign = $this->mailchimpService->createCampaign(
-            shop: $shop,
-            creator: $request->user(),
+            user: $request->user(),
+            
             name: $request->name,
             subject: $request->subject,
             htmlContent: $request->html_content,
@@ -303,11 +303,11 @@ class MailchimpController extends Controller
      */
     public function getCampaigns(Request $request): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
-        $query = EmailCampaign::where('shop_id', $shop->id)
+        $query = EmailCampaign::where('user_id', $request->user()->id)
             ->where('provider', 'mailchimp');
 
         // Filter by status
@@ -315,7 +315,7 @@ class MailchimpController extends Controller
             $query->where('status', $request->status);
         }
 
-        $campaigns = $query->with('creator')
+        $campaigns = $query
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -327,16 +327,16 @@ class MailchimpController extends Controller
      */
     public function getCampaign(Request $request, EmailCampaign $campaign): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        if ($campaign->shop_id !== $request->user()->shop_id) {
+        if ($campaign->user_id !== $request->user()_id) {
             return response()->json([
                 'error' => 'Unauthorized',
             ], 403);
         }
 
         return response()->json([
-            'campaign' => $campaign->load('creator'),
+            'campaign' => $campaign,
         ]);
     }
 
@@ -345,9 +345,9 @@ class MailchimpController extends Controller
      */
     public function sendCampaign(Request $request, EmailCampaign $campaign): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
-        if ($campaign->shop_id !== $request->user()->shop_id) {
+        if ($campaign->user_id !== $request->user()_id) {
             return response()->json([
                 'error' => 'Unauthorized',
             ], 403);
@@ -372,13 +372,13 @@ class MailchimpController extends Controller
      */
     public function scheduleCampaign(Request $request, EmailCampaign $campaign): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
         $request->validate([
             'scheduled_at' => 'required|date|after:now',
         ]);
 
-        if ($campaign->shop_id !== $request->user()->shop_id) {
+        if ($campaign->user_id !== $request->user()_id) {
             return response()->json([
                 'error' => 'Unauthorized',
             ], 403);
@@ -406,9 +406,9 @@ class MailchimpController extends Controller
      */
     public function getCampaignStatistics(Request $request, EmailCampaign $campaign): JsonResponse
     {
-        $this->authorize('view', $request->user()->shop);
+        $this->authorize('view', $request->user());
 
-        if ($campaign->shop_id !== $request->user()->shop_id) {
+        if ($campaign->user_id !== $request->user()_id) {
             return response()->json([
                 'error' => 'Unauthorized',
             ], 403);
@@ -433,11 +433,11 @@ class MailchimpController extends Controller
      */
     public function disconnect(Request $request): JsonResponse
     {
-        $this->authorize('update', $request->user()->shop);
+        $this->authorize('update', $request->user());
 
-        $shop = $request->user()->shop;
+        
 
-        $settings = EmailProviderSetting::byProvider($shop->id, 'mailchimp');
+        $settings = EmailProviderSetting::byProvider($request->user()->id, 'mailchimp');
 
         if (!$settings) {
             return response()->json([

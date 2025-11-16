@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('mailchimp_subscribers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shop_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             // Mailchimp data
             $table->string('mailchimp_id')->nullable(); // Subscriber hash from Mailchimp
@@ -45,10 +44,10 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index(['shop_id', 'email']);
-            $table->index(['shop_id', 'status']);
-            $table->index(['shop_id', 'audience_id']);
-            $table->unique(['shop_id', 'email', 'audience_id']);
+            $table->index(['user_id', 'email']);
+            $table->index(['user_id', 'status']);
+            $table->index(['user_id', 'audience_id']);
+            $table->unique(['user_id', 'email', 'audience_id']);
         });
     }
 

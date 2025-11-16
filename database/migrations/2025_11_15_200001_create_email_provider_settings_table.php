@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('email_provider_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shop_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             // Provider info
             $table->enum('provider', ['sendgrid', 'mailchimp', 'ses', 'mailgun', 'postmark'])->default('sendgrid');
@@ -49,9 +49,10 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index(['shop_id', 'provider']);
-            $table->index(['shop_id', 'is_active']);
-            $table->index(['shop_id', 'is_primary']);
+            $table->index(['user_id', 'provider']);
+            $table->index(['user_id', 'is_active']);
+            $table->index(['user_id', 'is_primary']);
+            $table->unique(['user_id', 'provider']); // Each user can have one config per provider
         });
     }
 

@@ -11,7 +11,6 @@ class MailchimpSubscriber extends Model
     use HasFactory;
 
     protected $fillable = [
-        'shop_id',
         'user_id',
         'mailchimp_id',
         'email',
@@ -42,15 +41,7 @@ class MailchimpSubscriber extends Model
     ];
 
     /**
-     * Get the shop that owns the subscriber.
-     */
-    public function shop(): BelongsTo
-    {
-        return $this->belongsTo(Shop::class);
-    }
-
-    /**
-     * Get the user associated with the subscriber.
+     * Get the user that owns the subscriber.
      */
     public function user(): BelongsTo
     {

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\EmailProviderSetting;
-use App\Models\Shop;
+use App\Models\User;
 use SendGrid;
 use SendGrid\Mail\Mail;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +14,7 @@ class SendGridService
      * Send a transactional email via SendGrid.
      */
     public function send(
-        Shop $shop,
+        User $user,
         string $to,
         string $subject,
         string $htmlContent,
@@ -24,10 +24,10 @@ class SendGridService
         ?array $attachments = null,
         ?array $customArgs = null
     ): bool {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
-            Log::error('SendGrid not configured for shop', ['shop_id' => $shop->id]);
+            Log::error('SendGrid not configured for user', ['user_id' => $user->id]);
             return false;
         }
 
@@ -84,7 +84,7 @@ class SendGridService
                 $settings->incrementEmailsSent();
 
                 Log::info('SendGrid email sent successfully', [
-                    'shop_id' => $shop->id,
+                    'user_id' => $user->id,
                     'to' => $to,
                     'subject' => $subject,
                     'status_code' => $response->statusCode(),
@@ -94,7 +94,7 @@ class SendGridService
             }
 
             Log::error('SendGrid API error', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'status_code' => $response->statusCode(),
                 'body' => $response->body(),
             ]);
@@ -103,7 +103,7 @@ class SendGridService
 
         } catch (\Exception $e) {
             Log::error('SendGrid exception', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -116,7 +116,7 @@ class SendGridService
      * Send bulk emails (up to 1000 recipients).
      */
     public function sendBulk(
-        Shop $shop,
+        User $user,
         array $recipients, // ['email' => 'name']
         string $subject,
         string $htmlContent,
@@ -124,7 +124,7 @@ class SendGridService
         ?string $fromEmail = null,
         ?string $fromName = null
     ): array {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
             return [
@@ -185,7 +185,7 @@ class SendGridService
 
         } catch (\Exception $e) {
             Log::error('SendGrid bulk email exception', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -221,9 +221,9 @@ class SendGridService
     /**
      * Get email statistics from SendGrid.
      */
-    public function getStatistics(Shop $shop, ?string $startDate = null, ?string $endDate = null): ?array
+    public function getStatistics(User $user, ?string $startDate = null, ?string $endDate = null): ?array
     {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
             return null;
@@ -247,7 +247,7 @@ class SendGridService
 
         } catch (\Exception $e) {
             Log::error('Failed to fetch SendGrid statistics', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -256,26 +256,26 @@ class SendGridService
     }
 
     /**
-     * Get SendGrid settings for shop.
+     * Get SendGrid settings for user.
      */
-    protected function getSettings(Shop $shop): ?EmailProviderSetting
+    protected function getSettings(User $user): ?EmailProviderSetting
     {
-        return EmailProviderSetting::byProvider($shop->id, 'sendgrid');
+        return EmailProviderSetting::byProvider($user->id, 'sendgrid');
     }
 
     /**
-     * Configure SendGrid for shop.
+     * Configure SendGrid for user.
      */
     public function configure(
-        Shop $shop,
+        User $user,
         string $apiKey,
         string $fromEmail,
         string $fromName,
         ?string $replyTo = null,
         bool $isPrimary = false
     ): EmailProviderSetting {
-        $settings = $this->getSettings($shop) ?? new EmailProviderSetting([
-            'shop_id' => $shop->id,
+        $settings = $this->getSettings($user) ?? new EmailProviderSetting([
+            'user_id' => $user->id,
             'provider' => 'sendgrid',
         ]);
 
@@ -302,12 +302,12 @@ class SendGridService
     /**
      * Test email configuration.
      */
-    public function testConfiguration(Shop $shop, string $testEmail): bool
+    public function testConfiguration(User $user, string $testEmail): bool
     {
         return $this->send(
-            shop: $shop,
+            user: $user,
             to: $testEmail,
-            subject: 'Test Email from ' . $shop->shop_name,
+            subject: 'Test Email from ' . $user->name,
             htmlContent: '<p>This is a test email to verify your SendGrid configuration is working correctly.</p>',
             textContent: 'This is a test email to verify your SendGrid configuration is working correctly.'
         );

@@ -18,7 +18,7 @@ class MailchimpService
      * Add or update subscriber in Mailchimp.
      */
     public function addSubscriber(
-        Shop $shop,
+        User $user,
         string $email,
         ?string $firstName = null,
         ?string $lastName = null,
@@ -26,17 +26,17 @@ class MailchimpService
         ?array $mergeFields = null,
         ?array $tags = null
     ): ?MailchimpSubscriber {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
-            Log::error('Mailchimp not configured for shop', ['shop_id' => $shop->id]);
+            Log::error('Mailchimp not configured for shop', ['user_id' => $user->id]);
             return null;
         }
 
         $audienceId = $settings->default_audience_id;
 
         if (!$audienceId) {
-            Log::error('No default audience ID configured', ['shop_id' => $shop->id]);
+            Log::error('No default audience ID configured', ['user_id' => $user->id]);
             return null;
         }
 
@@ -72,7 +72,7 @@ class MailchimpService
             // Create or update local record
             $subscriber = MailchimpSubscriber::updateOrCreate(
                 [
-                    'shop_id' => $shop->id,
+                    'user_id' => $user->id,
                     'email' => $email,
                     'audience_id' => $audienceId,
                 ],
@@ -94,7 +94,7 @@ class MailchimpService
             $subscriber->markAsSynced();
 
             Log::info('Mailchimp subscriber added', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'email' => $email,
                 'status' => $status,
             ]);
@@ -103,7 +103,7 @@ class MailchimpService
 
         } catch (\Exception $e) {
             Log::error('Mailchimp add subscriber error', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
@@ -115,9 +115,9 @@ class MailchimpService
     /**
      * Unsubscribe a subscriber.
      */
-    public function unsubscribe(Shop $shop, string $email): bool
+    public function unsubscribe(User $user, string $email): bool
     {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
             return false;
@@ -136,7 +136,7 @@ class MailchimpService
             );
 
             // Update local record
-            $subscriber = MailchimpSubscriber::where('shop_id', $shop->id)
+            $subscriber = MailchimpSubscriber::where('user_id', $user->id)
                 ->where('email', $email)
                 ->first();
 
@@ -148,7 +148,7 @@ class MailchimpService
 
         } catch (\Exception $e) {
             Log::error('Mailchimp unsubscribe error', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
@@ -185,9 +185,9 @@ class MailchimpService
     /**
      * Get all audiences (lists).
      */
-    public function getAudiences(Shop $shop): ?array
+    public function getAudiences(User $user): ?array
     {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
             return null;
@@ -202,7 +202,7 @@ class MailchimpService
 
         } catch (\Exception $e) {
             Log::error('Mailchimp get audiences error', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -213,9 +213,9 @@ class MailchimpService
     /**
      * Get subscriber count for audience.
      */
-    public function getSubscriberCount(Shop $shop, ?string $audienceId = null): ?int
+    public function getSubscriberCount(User $user, ?string $audienceId = null): ?int
     {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
             return null;
@@ -236,7 +236,7 @@ class MailchimpService
 
         } catch (\Exception $e) {
             Log::error('Mailchimp get subscriber count error', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -248,7 +248,7 @@ class MailchimpService
      * Create a new campaign.
      */
     public function createCampaign(
-        Shop $shop,
+        User $user,
         User $creator,
         string $name,
         string $subject,
@@ -256,7 +256,7 @@ class MailchimpService
         ?string $previewText = null,
         ?string $audienceId = null
     ): ?EmailCampaign {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
             return null;
@@ -265,7 +265,7 @@ class MailchimpService
         $audienceId = $audienceId ?? $settings->default_audience_id;
 
         if (!$audienceId) {
-            Log::error('No audience ID for campaign', ['shop_id' => $shop->id]);
+            Log::error('No audience ID for campaign', ['user_id' => $user->id]);
             return null;
         }
 
@@ -296,8 +296,8 @@ class MailchimpService
 
             // Create local campaign record
             $campaign = EmailCampaign::create([
-                'shop_id' => $shop->id,
-                'created_by' => $creator->id,
+                'user_id' => $user->id,
+                
                 'provider' => 'mailchimp',
                 'provider_campaign_id' => $response->id,
                 'name' => $name,
@@ -312,7 +312,7 @@ class MailchimpService
             ]);
 
             Log::info('Mailchimp campaign created', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'campaign_id' => $campaign->id,
             ]);
 
@@ -320,7 +320,7 @@ class MailchimpService
 
         } catch (\Exception $e) {
             Log::error('Mailchimp create campaign error', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -450,9 +450,9 @@ class MailchimpService
     /**
      * Sync all subscribers from Mailchimp audience.
      */
-    public function syncSubscribers(Shop $shop, ?string $audienceId = null): int
+    public function syncSubscribers(User $user, ?string $audienceId = null): int
     {
-        $settings = $this->getSettings($shop);
+        $settings = $this->getSettings($user);
 
         if (!$settings || !$settings->isReadyToSend()) {
             return 0;
@@ -480,7 +480,7 @@ class MailchimpService
                 foreach ($response->members as $member) {
                     MailchimpSubscriber::updateOrCreate(
                         [
-                            'shop_id' => $shop->id,
+                            'user_id' => $user->id,
                             'email' => $member->email_address,
                             'audience_id' => $audienceId,
                         ],
@@ -504,7 +504,7 @@ class MailchimpService
             $settings->update(['last_sync_at' => now()]);
 
             Log::info('Mailchimp subscribers synced', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'count' => $count,
             ]);
 
@@ -512,7 +512,7 @@ class MailchimpService
 
         } catch (\Exception $e) {
             Log::error('Mailchimp sync subscribers error', [
-                'shop_id' => $shop->id,
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -566,7 +566,7 @@ class MailchimpService
      * Configure Mailchimp for shop.
      */
     public function configure(
-        Shop $shop,
+        User $user,
         string $apiKey,
         string $defaultAudienceId,
         ?string $fromEmail = null,
@@ -579,16 +579,16 @@ class MailchimpService
             throw new \Exception('Invalid Mailchimp API key');
         }
 
-        $settings = $this->getSettings($shop) ?? new EmailProviderSetting([
-            'shop_id' => $shop->id,
+        $settings = $this->getSettings($user) ?? new EmailProviderSetting([
+            'user_id' => $user->id,
             'provider' => 'mailchimp',
         ]);
 
         $settings->setApiKey($apiKey);
         $settings->server_prefix = $verification['server_prefix'];
         $settings->default_audience_id = $defaultAudienceId;
-        $settings->from_email = $fromEmail ?? $shop->email;
-        $settings->from_name = $fromName ?? $shop->shop_name;
+        $settings->from_email = $fromEmail ?? $user->email;
+        $settings->from_name = $fromName ?? $user->name;
         $settings->reply_to = $replyTo;
         $settings->is_active = true;
         $settings->save();
@@ -599,9 +599,9 @@ class MailchimpService
     /**
      * Get Mailchimp settings for shop.
      */
-    protected function getSettings(Shop $shop): ?EmailProviderSetting
+    protected function getSettings(User $user): ?EmailProviderSetting
     {
-        return EmailProviderSetting::byProvider($shop->id, 'mailchimp');
+        return EmailProviderSetting::byProvider($user->id, 'mailchimp');
     }
 
     /**

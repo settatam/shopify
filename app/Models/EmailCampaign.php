@@ -11,8 +11,7 @@ class EmailCampaign extends Model
     use HasFactory;
 
     protected $fillable = [
-        'shop_id',
-        'created_by',
+        'user_id',
         'provider',
         'provider_campaign_id',
         'name',
@@ -63,19 +62,11 @@ class EmailCampaign extends Model
     ];
 
     /**
-     * Get the shop that owns the campaign.
+     * Get the user that owns the campaign.
      */
-    public function shop(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Shop::class);
-    }
-
-    /**
-     * Get the user who created the campaign.
-     */
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class);
     }
 
     /**
